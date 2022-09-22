@@ -34,6 +34,13 @@ Spring Native provides the ideal workload for computing in containers and Kubern
 
 As everything is not perfect, it is necessary to understand that there are steps in this process that need to be improved, as the process of generating a native image is very heavy and time-consuming.
 
+### Environment/Localstack
+We use *Localstack* for emulate on local machine our Aws environment. To start the localstack in the repository have a file docker-compose.yml
+
+For start localstack running this command: 
+```
+docker-compose up -d
+```
 
 ### Necessary Steps
 
