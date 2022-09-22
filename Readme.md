@@ -53,4 +53,3 @@ Time to start/running the functions with spring native.
 ```
 INFO 38045 --- [main] c.l.s.f.Function1ApplicationTests : Started Function1ApplicationTests in 0.64 seconds (JVM running for 1.13)
 ```
-
