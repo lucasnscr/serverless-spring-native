@@ -1,17 +1,5 @@
 # Serverless Architecture with Spring Native
 
-### Project description
-Project that builds an group of the function running GraalVM, Spring Native and Spring Cloud Functions.
-
-## Installation ##
-
-It is necessary to install some items:
-- Docker
-- Maven
-- GraalVM
-- Localstack
-- Spring Cloud Functions
-
 ### Serveless Architecture
 
 Serverless differs from other cloud computing models in that the cloud provider is responsible for managing both the cloud infrastructure and the scaling of apps. Serverless apps are deployed in containers that automatically launch on demand when called.
@@ -23,6 +11,10 @@ With serverless architecture, by contrast, apps are launched only as needed. Whe
 With serverless, routine tasks such as managing the operating system and file system, security patches, load balancing, capacity management, scaling, logging, and monitoring are all offloaded to a cloud services provider.
 
 It’s possible to build an entirely serverless app, or an app composed of partially serverless and partially traditional microservices components.
+
+
+
+![Serverless architecture example](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/eae9izs09qfp8822i616.png)
 
 ### Native Image
 Native image is a technology that allows you to compile Java code in advance and make it executable. This executable contains application classes, their dependency classes, runtime library classes, and native code linked to the JDK. After the build process, it builds the executable for the operating system, this process is called image build. JVM-based languages have this capability like Java, Scala, Clojure and Kotlin.
@@ -53,3 +45,19 @@ Time to start/running the functions with spring native.
 ```
 INFO 38045 --- [main] c.l.s.f.Function1ApplicationTests : Started Function1ApplicationTests in 0.64 seconds (JVM running for 1.13)
 ```
+
+### Project description
+Project that builds an group of the function running GraalVM, Spring Native and Spring Cloud Functions.
+
+
+![Serverless Implementation](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/wsx53kq3rib5pa825ocy.png)
+
+## Installation ##
+
+It is necessary to install some items:
+- Docker
+- Maven
+- GraalVM
+- Localstack
+- Spring Cloud Functions
+
