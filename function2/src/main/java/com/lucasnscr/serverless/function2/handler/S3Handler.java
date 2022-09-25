@@ -15,14 +15,12 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 @Slf4j
-@Component
 public class S3Handler implements RequestHandler<S3Event, ByteArrayOutputStream> {
 
     @Value("${aws.region}")
