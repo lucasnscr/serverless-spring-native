@@ -41,6 +41,78 @@ Running the command below:
 mvn -ntp clean package -Pnative --settings ./settings-spring-native.xml
 ```
 
+Command for crate S3 bucket:
+```
+aws s3 mb s3://native-bucket --endpoint-url http://localhost:4566
+```
+
+Command for create Aws Lambda(Function1):
+```
+aws lambda create-function \
+--endpoint-url http://localhost:4566 \
+--function-name function1 \
+--runtime java17 \
+--handler function1.S3Handler \
+--region us-east-1 \
+--zip-file fileb://function1-0.0.1-SNAPSHOT.jar \
+--role arn:aws:iam::12345:role/ignoreme
+```
+
+Command for create Aws Lambda(Function2):
+```
+aws lambda create-function \
+--endpoint-url http://localhost:4566 \
+--function-name function2 \
+--runtime java17 \
+--handler function2.S3Handler \
+--region us-east-1 \
+--zip-file fileb://function2-0.0.1-SNAPSHOT.jar \
+--role arn:aws:iam::12345:role/ignoreme
+```
+
+Following all the steps, when we execute the command receive the return with this message:
+```
+{
+    "FunctionName": "function1",
+    "FunctionArn": "arn:aws:lambda:us-east-1:000000000000:function:function1",
+    "Runtime": "java17",
+    "Role": "arn:aws:iam::12345:role/ignoreme",
+    "Handler": "function1.S3Handler",
+    "CodeSize": 91807,
+    "Description": "",
+    "Timeout": 3,
+    "LastModified": "2022-09-25T18:10:57.187+0000",
+    "CodeSha256": "JDYOPtjvkoP17EKU5Fhu45GGFrDve0tJSe2iRccEb9g=",
+    "Version": "$LATEST",
+    "VpcConfig": {},
+    "TracingConfig": {
+        "Mode": "PassThrough"
+    },
+    "RevisionId": "1acedcab-1c5d-4b33-932a-bc2e6a2a67da",
+    "State": "Active",
+    "LastUpdateStatus": "Successful",
+    "PackageType": "Zip",
+    "Architectures": [
+        "x86_64"
+    ]
+```
+
+**Registering our Lambda to S3 bucket events**
+
+Finally, we need to bind the lambda to the put-bucket-notification event within LocalStack. Any time that an object is created within our native-image S3 bucket, it will invoke our earlier Java code.
+
+**Function1**
+```
+aws s3api put-bucket-notification-configuration --bucket native-image --notification-configuration file://s3hook.json --endpoint-url http://localhost:4566
+```
+
+**Invoking a Lambda within LocalStack**
+
+Create a simple text file called samplefile.txt and run the following command to transfer the file to S3, thereby triggering the Lambda:
+```
+aws s3 cp uploadfile.txt s3://native-bucket/uploadfile.txt --endpoint-url http://localhost:4566
+```
+
 Time to start/running the functions with spring native.
 ```
 INFO 38045 --- [main] c.l.s.f.Function1ApplicationTests : Started Function1ApplicationTests in 0.64 seconds (JVM running for 1.13)
