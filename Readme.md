@@ -125,12 +125,6 @@ INFO 38045 --- [main] c.l.s.f.Function1ApplicationTests : Started Function1Appli
 ```
 
 ### Project description
-Project that builds an group of the function running GraalVM, Spring Native and Spring Cloud Functions.
-
+Project design and architecture.
 
 ![Serverless Implementation](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/wsx53kq3rib5pa825ocy.png)
-
-
-# Checkout this project from Github
-
-git clone https://github.com/lucasnscr/serverless-spring-native
