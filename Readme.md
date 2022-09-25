@@ -41,6 +41,12 @@ Running the command below:
 mvn -ntp clean package -Pnative --settings ./settings-spring-native.xml
 ```
 
+Command for create docker of the application using:
+```
+mvn spring-boot:build-image --settings ./settings-spring-native.xml
+
+```
+
 Command for crate S3 bucket:
 ```
 aws s3 mb s3://native-bucket --endpoint-url http://localhost:4566
@@ -124,12 +130,7 @@ Project that builds an group of the function running GraalVM, Spring Native and 
 
 ![Serverless Implementation](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/wsx53kq3rib5pa825ocy.png)
 
-## Installation ##
 
-It is necessary to install some items:
-- Docker
-- Maven
-- GraalVM
-- Localstack
-- Spring Cloud Functions
+# Checkout this project from Github
 
+git clone https://github.com/lucasnscr/serverless-spring-native
