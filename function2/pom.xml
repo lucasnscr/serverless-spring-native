@@ -95,6 +95,12 @@
 			<artifactId>aws-java-sdk-s3</artifactId>
 			<version>1.12.305</version>
 		</dependency>
+		<dependency>
+			<groupId>cloud.localstack</groupId>
+			<artifactId>localstack-utils</artifactId>
+			<version>0.2.21</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

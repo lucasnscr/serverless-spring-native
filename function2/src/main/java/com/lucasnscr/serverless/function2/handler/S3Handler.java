@@ -1,51 +1,79 @@
 package com.lucasnscr.serverless.function2.handler;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StreamUtils;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.logging.Logger;
 
+@Slf4j
+@Component
+public class S3Handler implements RequestHandler<S3Event, ByteArrayOutputStream> {
 
-public class S3Handler implements RequestHandler<S3Event, String> {
-    private final String accessKeyId = System.getenv("accessKeyId");
-    private final String secretAccessKey = System.getenv("secretAccessKey");
-    private final String region = System.getenv("region");
-    private final BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+    @Value("${aws.region}")
+    private String awsRegion;
+
+    @Value("${aws.accesskey}")
+    private String awsAccessKeyId;
+
+    @Value("${aws.secretkey}")
+    private String awsSecretAccessKey;
+
+    @Value("${aws.s3.endpoint}")
+    private String awsEndpoint;
+
+    @Value("${bucket.name}")
+    private String bucketName;
+
+    private final BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey);
+
     AmazonS3 s3Client = AmazonS3ClientBuilder
             .standard()
-            .withRegion(region)
+            .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(awsEndpoint, awsRegion))
             .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
             .build();
 
-    static final Logger log = (Logger) LoggerFactory.getLogger(S3Handler.class);
-
     @Override
-    public String handleRequest(S3Event s3Event, Context context) {
+    public ByteArrayOutputStream handleRequest(S3Event s3Event, Context context) {
 
-        log.info("Lambda function is invoked: Processing the uploads........." + s3Event.toString());
+        S3EventNotification.S3EventNotificationRecord record = s3Event.getRecords().get(0);
+        String keyName = record.getS3().getObject().getKey();
 
-        final String bucketName = s3Event.getRecords().get(0).getS3().getBucket().getName();
-        final String fileName = s3Event.getRecords().get(0).getS3().getObject().getKey();
+        try {
+                S3Object s3object = s3Client.getObject(new GetObjectRequest(bucketName, keyName));
 
-        log.info("File - "+ fileName+" uploaded into "+
-                bucketName+" bucket at "+ s3Event.getRecords().get(0).getEventTime());
-
-        try{
-            InputStream objectContent = s3Client.getObject(bucketName, fileName).getObjectContent();
-            log.info("File Contents : " + StreamUtils.copyToString(objectContent, StandardCharsets.UTF_8));
-        }catch (Exception e){
-            log.warning("Error in upload file to S3:" + e.getMessage());
-            return "Error reading contents of the file";
+                InputStream is = s3object.getObjectContent();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                int len;
+                byte[] buffer = new byte[4096];
+                while ((len = is.read(buffer, 0, buffer.length)) != -1) {
+                    outputStream.write(buffer, 0, len);
+                }
+                return outputStream;
+            } catch (IOException ioException) {
+                log.error("IOException: " + ioException.getMessage());
+            } catch (AmazonServiceException serviceException) {
+                log.info("AmazonServiceException Message:    " + serviceException.getMessage());
+                throw serviceException;
+            } catch (AmazonClientException clientException) {
+                log.info("AmazonClientException Message: " + clientException.getMessage());
+                throw clientException;
+            }
+            return null;
         }
-        return null;
-    }
 }
